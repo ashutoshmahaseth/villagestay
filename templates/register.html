@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Create account</h2>
+<form class="stack" method="post">
+  <input name="name" placeholder="Full name" required>
+  <input name="email" type="email" placeholder="Email" required>
+  <input name="password" type="password" placeholder="Password (6+ chars)" required>
+  <select name="role">
+    <option value="guest">I want to stay in a village home</option>
+    <option value="owner">I own a home and live away</option>
+  </select>
+  <button>Register</button>
+</form>
+{% endblock %}

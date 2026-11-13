@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+{% if p.image %}<img class="hero" src="{{ url_for('static', filename='uploads/' + p.image) }}" alt="">{% endif %}
+<h2>{{ p.title }}{% if p.verified %} <span class="tag ok">✔ verified</span>{% endif %}</h2>
+<p>{{ p.village }}, {{ p.state }} · <span class="tag">{{ p.stay_type.replace('_', ' ') }}</span>
+ · Owner: {{ p.owner_name }}{% if avg %} · ⭐ {{ avg }} ({{ reviews|length }}){% endif %}</p>
+<p>{{ p.description }}</p>
+{% if session.user_id == p.owner_id %}
+  <a href="{{ url_for('edit_property', pid=p.id) }}">Edit</a> ·
+  <form class="inline" method="post" action="{{ url_for('delete_property', pid=p.id) }}" onsubmit="return confirm('Delete this listing?')"><button>Delete</button></form>
+{% endif %}
+{% if session.role == 'guest' %}
+  <form class="inline" method="post" action="{{ url_for('toggle_favorite', pid=p.id) }}"><button>{{ '♥ Saved (remove)' if is_fav else '♡ Save this home' }}</button></form>
+{% endif %}
+<div class="box">
+  <h3>Where the rent goes</h3>
+  <table>
+    <tr><td>Monthly rent</td><td>₹{{ p.rent }}</td></tr>
+    <tr><td>Platform fee (10%)</td><td>₹{{ split.fee }}</td></tr>
+    {% if p.caretaker %}<tr><td>Local caretaker (5%)</td><td>₹{{ split.care }}</td></tr>{% endif %}
+    <tr><th>Owner receives</th><th>₹{{ split.owner }}</th></tr>
+  </table>
+</div>
+{% if p.status == 'available' and session.role == 'guest' %}
+<h3>Request this home</h3>
+<form class="stack" method="post" action="{{ url_for('request_booking', pid=p.id) }}">
+  <input type="date" name="start_date" required>
+  <input type="number" name="months" min="1" placeholder="Number of months" required>
+  <textarea name="message" rows="3" placeholder="Tell the owner about yourself"></textarea>
+  <button>Send request</button>
+</form>
+{% elif p.status != 'available' %}<p><b>This home is currently rented.</b></p>
+{% elif not session.user_id %}<p><a href="{{ url_for('login') }}">Log in</a> as a guest to request this home.</p>{% endif %}
+<h3>Reviews</h3>
+{% if can_review %}
+<form class="stack" method="post" action="{{ url_for('add_review', pid=p.id) }}">
+  <select name="rating"><option value="5">5 ⭐</option><option value="4">4 ⭐</option><option value="3">3 ⭐</option><option value="2">2 ⭐</option><option value="1">1 ⭐</option></select>
+  <textarea name="comment" rows="2" placeholder="How was your stay?"></textarea>
+  <button>Post review</button>
+</form>
+{% endif %}
+{% for r in reviews %}<div class="review"><b>{{ r.name }}</b> · {{ '⭐' * r.rating }}<br>{{ r.comment }}</div>
+{% else %}<p>No reviews yet.</p>{% endfor %}
+{% endblock %}

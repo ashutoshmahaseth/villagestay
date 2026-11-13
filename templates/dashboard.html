@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Dashboard</h2>
+{% if session.role == 'owner' %}
+<div class="box"><b>Total earned from approved stays:</b> <span class="price">₹{{ earned }}</span></div>
+<h3>My homes</h3>
+<div class="grid">
+{% for p in props %}
+  <a class="card" href="{{ url_for('property_detail', pid=p.id) }}"><h3>{{ p.title }}</h3>
+  <p>{{ p.village }} · ₹{{ p.rent }}/mo</p><span class="tag">{{ p.status }}</span>
+  {% if p.verified %}<span class="tag ok">✔ verified</span>{% endif %}</a>
+{% else %}<p>No homes yet. <a href="{{ url_for('new_property') }}">List one</a>.</p>{% endfor %}
+</div>
+{% endif %}
+<h3>{{ 'Booking requests' if session.role == 'owner' else 'My requests' }}</h3>
+<table>
+{% for r in reqs %}
+  <tr>
+    <td>{{ r.title }}{% if session.role == 'owner' %}<br><small>{{ r.guest_name }}</small>{% endif %}</td>
+    <td>{{ r.start_date }}<br><small>{{ r.months }} month(s)</small></td>
+    <td>{{ r.status }}</td>
+    <td>
+    {% if session.role == 'owner' and r.status == 'pending' %}
+      <form class="inline" method="post" action="{{ url_for('booking_action', bid=r.id, action='approve') }}"><button>Approve</button></form>
+      <form class="inline" method="post" action="{{ url_for('booking_action', bid=r.id, action='reject') }}"><button>Reject</button></form>
+    {% elif session.role == 'guest' and r.status in ('pending', 'approved') %}
+      <form class="inline" method="post" action="{{ url_for('cancel_booking', bid=r.id) }}"><button>Cancel</button></form>
+    {% endif %}
+    </td>
+  </tr>
+{% else %}<tr><td>Nothing here yet.</td></tr>{% endfor %}
+</table>
+{% endblock %}

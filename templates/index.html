@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ heading }}</h1>
+{% if not saved %}
+<form class="search" method="get">
+  <input name="q" placeholder="Village or state" value="{{ q }}">
+  <select name="stay_type">
+    <option value="">Any stay</option>
+    <option value="experience" {% if stay_type == 'experience' %}selected{% endif %}>Short experience</option>
+    <option value="long_term" {% if stay_type == 'long_term' %}selected{% endif %}>Live long-term</option>
+  </select>
+  <input name="max_rent" type="number" min="1" placeholder="Max rent ₹" value="{{ max_rent }}">
+  <button>Search</button>
+</form>
+{% endif %}
+<div class="grid">
+{% for p in properties %}
+  <a class="card" href="{{ url_for('property_detail', pid=p.id) }}">
+    {% if p.image %}<img src="{{ url_for('static', filename='uploads/' + p.image) }}" alt="">{% endif %}
+    <h3>{{ p.title }}{% if p.verified %} <span class="tag ok">✔ verified</span>{% endif %}</h3>
+    <p>{{ p.village }}, {{ p.state }}</p>
+    <p class="price">₹{{ p.rent }}/month{% if p.avg_rating %} · ⭐ {{ p.avg_rating }}{% endif %}</p>
+    <span class="tag">{{ p.stay_type.replace('_', ' ') }}</span>
+  </a>
+{% else %}<p>No homes found.</p>{% endfor %}
+</div>
+{% endblock %}

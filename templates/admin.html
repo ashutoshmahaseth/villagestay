@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Admin panel</h2>
+<div class="grid">
+{% for k, v in stats.items() %}<div class="box"><b>{{ v }}</b><br>{{ k }}</div>{% endfor %}
+</div>
+<h3>All listings</h3>
+<table>
+{% for p in props %}
+  <tr>
+    <td><a href="{{ url_for('property_detail', pid=p.id) }}">{{ p.title }}</a><br><small>{{ p.village }} · by {{ p.owner_name }}</small></td>
+    <td>{{ p.status }}</td>
+    <td><form class="inline" method="post" action="{{ url_for('verify', pid=p.id) }}"><button>{{ 'Unverify' if p.verified else 'Verify' }}</button></form></td>
+  </tr>
+{% else %}<tr><td>No listings yet.</td></tr>{% endfor %}
+</table>
+{% endblock %}

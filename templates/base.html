@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VillageStay</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head><body>
+<nav>
+  <a class="brand" href="{{ url_for('index') }}">🏡 VillageStay</a>
+  {% if session.user_id %}
+    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+    {% if session.role == 'owner' %}<a href="{{ url_for('new_property') }}">List a home</a>{% endif %}
+    {% if session.role == 'guest' %}<a href="{{ url_for('saved') }}">Saved</a>{% endif %}
+    {% if session.role == 'admin' %}<a href="{{ url_for('admin') }}">Admin</a>{% endif %}
+    <a href="{{ url_for('logout') }}">Logout ({{ session.name }})</a>
+  {% else %}
+    <a href="{{ url_for('login') }}">Login</a>
+    <a href="{{ url_for('register') }}">Register</a>
+  {% endif %}
+</nav>
+<main>
+  {% for m in get_flashed_messages() %}<div class="flash">{{ m }}</div>{% endfor %}
+  {% block content %}<p>Page not found.</p>{% endblock %}
+</main>
+</body></html>

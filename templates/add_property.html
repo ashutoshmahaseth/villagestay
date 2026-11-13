@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ 'Edit listing' if p else 'List your home' }}</h2>
+<form class="stack" method="post" enctype="multipart/form-data">
+  <input name="title" placeholder="Title" value="{{ p.title if p else '' }}" required>
+  <input name="village" placeholder="Village" value="{{ p.village if p else '' }}" required>
+  <input name="state" placeholder="State" value="{{ p.state if p else '' }}" required>
+  <textarea name="description" rows="4" placeholder="Describe the home, surroundings, condition">{{ p.description if p else '' }}</textarea>
+  <input name="rent" type="number" min="1" placeholder="Monthly rent (₹)" value="{{ p.rent if p else '' }}" required>
+  <select name="stay_type">
+    <option value="experience" {% if p and p.stay_type == 'experience' %}selected{% endif %}>Short experience stay</option>
+    <option value="long_term" {% if p and p.stay_type == 'long_term' %}selected{% endif %}>Long-term living</option>
+  </select>
+  <label><input type="checkbox" name="caretaker" {% if p and p.caretaker %}checked{% endif %}> Add a local caretaker (5% of rent)</label>
+  <label>Photo (png/jpg/webp, max 5 MB)<input type="file" name="image" accept="image/*"></label>
+  <button>{{ 'Save changes' if p else 'Publish' }}</button>
+</form>
+{% endblock %}
